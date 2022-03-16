@@ -178,8 +178,8 @@ func NewClient(basePath string, options ...func(*gocloak)) GoCloak {
 	}
 
 	c.Config.CertsInvalidateTime = 10 * time.Minute
-	c.Config.authAdminRealms = makeURL("auth", "admin", "realms")
-	c.Config.authRealms = makeURL("auth", "realms")
+	c.Config.authAdminRealms = makeURL("admin", "realms")
+	c.Config.authRealms = makeURL("realms")
 	c.Config.tokenEndpoint = makeURL("protocol", "openid-connect", "token")
 	c.Config.logoutEndpoint = makeURL("protocol", "openid-connect", "logout")
 	c.Config.openIDConnect = makeURL("protocol", "openid-connect")

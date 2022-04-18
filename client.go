@@ -203,6 +203,10 @@ func (client *gocloak) Users() *Users {
 	return client.users
 }
 
+func (client *gocloak) Groups() *Groups {
+	return client.groups
+}
+
 func (client *gocloak) SetRestyClient(restyClient *resty.Client) {
 	client.restyClient = restyClient
 }

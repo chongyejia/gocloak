@@ -10,6 +10,7 @@ import (
 
 // GoCloak holds all methods a client should fulfill
 type GoCloak interface {
+	Users() *Users
 	// RestyClient returns a resty client that gocloak uses
 	RestyClient() *resty.Client
 	// Sets the resty Client that gocloak uses

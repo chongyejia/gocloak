@@ -199,6 +199,10 @@ func (client *gocloak) RestyClient() *resty.Client {
 	return client.restyClient
 }
 
+func (client *gocloak) Users() *Users {
+	return client.users
+}
+
 func (client *gocloak) SetRestyClient(restyClient *resty.Client) {
 	client.restyClient = restyClient
 }

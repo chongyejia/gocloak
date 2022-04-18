@@ -68,10 +68,6 @@ type GoCloak interface {
 	// ExecuteActionsEmail executes an actions email
 	ExecuteActionsEmail(ctx context.Context, token, realm string, params ExecuteActionsEmail) error
 
-	// CreateGroup creates a new group
-	CreateGroup(ctx context.Context, accessToken, realm string, group Group) (string, error)
-	// CreateChildGroup creates a new child group
-	CreateChildGroup(ctx context.Context, token, realm, groupID string, group Group) (string, error)
 	// CreateClient creates a new client
 	CreateClient(ctx context.Context, accessToken, realm string, newClient Client) (string, error)
 	// CreateClientScope creates a new clientScope
@@ -87,8 +83,6 @@ type GoCloak interface {
 	// CreateClientRepresentation creates a new client representation
 	CreateClientRepresentation(ctx context.Context, realm string) (*Client, error)
 
-	// UpdateGroup updates the given group
-	UpdateGroup(ctx context.Context, accessToken, realm string, updatedGroup Group) error
 	// UpdateRole updates the given role
 	UpdateRole(ctx context.Context, accessToken, realm, idOfClient string, role Role) error
 	// UpdateClient updates the given client
@@ -100,8 +94,6 @@ type GoCloak interface {
 
 	// DeleteComponent deletes the given component
 	DeleteComponent(ctx context.Context, accessToken, realm, componentID string) error
-	// DeleteGroup deletes the given group
-	DeleteGroup(ctx context.Context, accessToken, realm, groupID string) error
 	// DeleteClient deletes the given client
 	DeleteClient(ctx context.Context, accessToken, realm, idOfClient string) error
 	// DeleteClientScope
@@ -167,16 +159,10 @@ type GoCloak interface {
 	AddDefaultGroup(ctx context.Context, accessToken, realm, groupID string) error
 	// RemoveDefaultGroup removes group from the list of default groups
 	RemoveDefaultGroup(ctx context.Context, accessToken, realm, groupID string) error
-	// GetGroups gets all groups of the given realm
-	GetGroups(ctx context.Context, accessToken, realm string, params GetGroupsParams) ([]*Group, error)
+
 	// GetGroupsByRole gets groups with specified roles assigned of given realm
 	GetGroupsByRole(ctx context.Context, accessToken, realm string, roleName string) ([]*Group, error)
-	// GetGroupsCount gets groups count of the given realm
-	GetGroupsCount(ctx context.Context, token, realm string, params GetGroupsParams) (int, error)
-	// GetGroup gets the given group
-	GetGroup(ctx context.Context, accessToken, realm, groupID string) (*Group, error)
-	// GetGroupMembers get a list of users of group with id in realm
-	GetGroupMembers(ctx context.Context, accessToken, realm, groupID string, params GetGroupsParams) ([]*User, error)
+
 	// GetRoleMappingByGroupID gets the rolemapping for the given group id
 	GetRoleMappingByGroupID(ctx context.Context, accessToken, realm, groupID string) (*MappingsRepresentation, error)
 	// GetRoleMappingByUserID gets the rolemapping for the given user id
@@ -320,40 +306,6 @@ type GoCloak interface {
 	CreateAuthenticationExecutionFlow(ctx context.Context, token, realm, flow string, execution CreateAuthenticationExecutionFlowRepresentation) error
 
 	// *** Users ***
-	// CreateUser creates a new user
-	CreateUser(ctx context.Context, token, realm string, user User) (string, error)
-	// DeleteUser deletes the given user
-	DeleteUser(ctx context.Context, accessToken, realm, userID string) error
-	// GetUserByID gets the user with the given id
-	GetUserByID(ctx context.Context, accessToken, realm, userID string) (*User, error)
-	// GetUser count returns the userCount of the given realm
-	GetUserCount(ctx context.Context, accessToken, realm string, params GetUsersParams) (int, error)
-	// GetUsers gets all users of the given realm
-	GetUsers(ctx context.Context, accessToken, realm string, params GetUsersParams) ([]*User, error)
-	// GetUserGroups gets the groups of the given user
-	GetUserGroups(ctx context.Context, accessToken, realm, userID string, params GetGroupsParams) ([]*Group, error)
-	// GetUsersByRoleName returns all users have a given role
-	GetUsersByRoleName(ctx context.Context, token, realm, roleName string) ([]*User, error)
-	// GetUsersByClientRoleName returns all users have a given client role
-	GetUsersByClientRoleName(ctx context.Context, token, realm, idOfClient, roleName string, params GetUsersByRoleParams) ([]*User, error)
-	// SetPassword sets a new password for the user with the given id. Needs elevated privileges
-	SetPassword(ctx context.Context, token, userID, realm, password string, temporary bool) error
-	// UpdateUser updates the given user
-	UpdateUser(ctx context.Context, accessToken, realm string, user User) error
-	// AddUserToGroup puts given user to given group
-	AddUserToGroup(ctx context.Context, token, realm, userID, groupID string) error
-	// DeleteUserFromGroup deletes given user from given group
-	DeleteUserFromGroup(ctx context.Context, token, realm, userID, groupID string) error
-	// GetUserSessions returns user sessions associated with the user
-	GetUserSessions(ctx context.Context, token, realm, userID string) ([]*UserSessionRepresentation, error)
-	// GetUserOfflineSessionsForClient returns offline sessions associated with the user and client
-	GetUserOfflineSessionsForClient(ctx context.Context, token, realm, userID, idOfClient string) ([]*UserSessionRepresentation, error)
-	// GetUserFederatedIdentities gets all user federated identities
-	GetUserFederatedIdentities(ctx context.Context, token, realm, userID string) ([]*FederatedIdentityRepresentation, error)
-	// CreateUserFederatedIdentity creates an user federated identity
-	CreateUserFederatedIdentity(ctx context.Context, token, realm, userID, providerID string, federatedIdentityRep FederatedIdentityRepresentation) error
-	// DeleteUserFederatedIdentity deletes an user federated identity
-	DeleteUserFederatedIdentity(ctx context.Context, token, realm, userID, providerID string) error
 
 	// *** Identity Provider **
 	// CreateIdentityProvider creates an identity provider in a realm

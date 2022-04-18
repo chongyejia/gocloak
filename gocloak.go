@@ -2,8 +2,6 @@ package gocloak
 
 import (
 	"context"
-	"io"
-
 	"github.com/go-resty/resty/v2"
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -13,6 +11,18 @@ type GoCloak interface {
 	Users() *Users
 
 	Groups() *Groups
+
+	Realm() *Realm
+
+	RealmRoles() *RealmRoles
+
+	ClientRoles() *ClientRoles
+
+	Protection() *Protection
+
+	IdentityProvider() *IdentityProvider
+
+	Credentials() *Credentials
 
 	// RestyClient returns a resty client that gocloak uses
 	RestyClient() *resty.Client
@@ -187,267 +197,6 @@ type GoCloak interface {
 	GetClientRepresentation(ctx context.Context, accessToken, realm, clientID string) (*Client, error)
 	// GetAdapterConfiguration returns a adapter configuration
 	GetAdapterConfiguration(ctx context.Context, accessToken, realm, clientID string) (*AdapterConfiguration, error)
-
-	// *** Realm Roles ***
-
-	// CreateRealmRole creates a role in a realm
-	CreateRealmRole(ctx context.Context, token, realm string, role Role) (string, error)
-	// GetRealmRole returns a role from a realm by role's name
-	GetRealmRole(ctx context.Context, token, realm, roleName string) (*Role, error)
-	// GetRealmRoleByID returns a role from a realm by role's ID
-	GetRealmRoleByID(ctx context.Context, token, realm, roleID string) (*Role, error)
-	// GetRealmRoles get all roles of the given realm. It's an alias for the GetRoles function
-	GetRealmRoles(ctx context.Context, accessToken, realm string, params GetRoleParams) ([]*Role, error)
-	// GetRealmRolesByUserID returns all roles assigned to the given user
-	GetRealmRolesByUserID(ctx context.Context, accessToken, realm, userID string) ([]*Role, error)
-	// GetRealmRolesByGroupID returns all roles assigned to the given group
-	GetRealmRolesByGroupID(ctx context.Context, accessToken, realm, groupID string) ([]*Role, error)
-	// UpdateRealmRole updates a role in a realm
-	UpdateRealmRole(ctx context.Context, token, realm, roleName string, role Role) error
-	// UpdateRealmRoleByID updates a role in a realm by role's ID
-	UpdateRealmRoleByID(ctx context.Context, token, realm, roleID string, role Role) error
-	// DeleteRealmRole deletes a role in a realm by role's name
-	DeleteRealmRole(ctx context.Context, token, realm, roleName string) error
-	// AddRealmRoleToUser adds realm-level role mappings
-	AddRealmRoleToUser(ctx context.Context, token, realm, userID string, roles []Role) error
-	// DeleteRealmRoleFromUser deletes realm-level role mappings
-	DeleteRealmRoleFromUser(ctx context.Context, token, realm, userID string, roles []Role) error
-	// AddRealmRoleToGroup adds realm-level role mappings
-	AddRealmRoleToGroup(ctx context.Context, token, realm, groupID string, roles []Role) error
-	// DeleteRealmRoleFromGroup deletes realm-level role mappings
-	DeleteRealmRoleFromGroup(ctx context.Context, token, realm, groupID string, roles []Role) error
-	// AddRealmRoleComposite adds roles as composite
-	AddRealmRoleComposite(ctx context.Context, token, realm, roleName string, roles []Role) error
-	// AddRealmRoleComposite adds roles as composite
-	DeleteRealmRoleComposite(ctx context.Context, token, realm, roleName string, roles []Role) error
-	// GetCompositeRealmRoles returns all realm composite roles associated with the given realm role
-	GetCompositeRealmRoles(ctx context.Context, token, realm, roleName string) ([]*Role, error)
-	// GetCompositeRealmRolesByRoleID returns all realm composite roles associated with the given client role
-	GetCompositeRealmRolesByRoleID(ctx context.Context, token, realm, roleID string) ([]*Role, error)
-	// GetCompositeRealmRolesByUserID returns all realm roles and composite roles assigned to the given user
-	GetCompositeRealmRolesByUserID(ctx context.Context, token, realm, userID string) ([]*Role, error)
-	// GetCompositeRealmRolesByGroupID returns all realm roles and composite roles assigned to the given group
-	GetCompositeRealmRolesByGroupID(ctx context.Context, token, realm, groupID string) ([]*Role, error)
-	// GetAvailableRealmRolesByUserID returns all available realm roles to the given user
-	GetAvailableRealmRolesByUserID(ctx context.Context, token, realm, userID string) ([]*Role, error)
-	// GetAvailableRealmRolesByGroupID returns all available realm roles to the given group
-	GetAvailableRealmRolesByGroupID(ctx context.Context, token, realm, groupID string) ([]*Role, error)
-
-	// *** Client Roles ***
-
-	// AddClientRoleToUser adds a client role to the user
-	AddClientRoleToUser(ctx context.Context, token, realm, idOfClient, userID string, roles []Role) error
-	// AddClientRoleToGroup adds a client role to the group
-	AddClientRoleToGroup(ctx context.Context, token, realm, idOfClient, groupID string, roles []Role) error
-	// CreateClientRole creates a new role for a client
-	CreateClientRole(ctx context.Context, accessToken, realm, idOfClient string, role Role) (string, error)
-	// DeleteClientRole deletes the given role
-	DeleteClientRole(ctx context.Context, accessToken, realm, idOfClient, roleName string) error
-	// DeleteClientRoleFromUser removes a client role from from the user
-	DeleteClientRoleFromUser(ctx context.Context, token, realm, idOfClient, userID string, roles []Role) error
-	// DeleteClientRoleFromGroup removes a client role from from the group
-	DeleteClientRoleFromGroup(ctx context.Context, token, realm, idOfClient, groupID string, roles []Role) error
-	// GetClientRoles gets roles for the given client
-	GetClientRoles(ctx context.Context, accessToken, realm, idOfClient string, params GetRoleParams) ([]*Role, error)
-	// GetClientRoleById gets role for the given client using role id
-	GetClientRoleByID(ctx context.Context, accessToken, realm, roleID string) (*Role, error)
-	// GetRealmRolesByUserID returns all client roles assigned to the given user
-	GetClientRolesByUserID(ctx context.Context, token, realm, idOfClient, userID string) ([]*Role, error)
-	// GetClientRolesByGroupID returns all client roles assigned to the given group
-	GetClientRolesByGroupID(ctx context.Context, token, realm, idOfClient, groupID string) ([]*Role, error)
-	// GetCompositeClientRolesByRoleID returns all client composite roles associated with the given client role
-	GetCompositeClientRolesByRoleID(ctx context.Context, token, realm, idOfClient, roleID string) ([]*Role, error)
-	// GetCompositeClientRolesByUserID returns all client roles and composite roles assigned to the given user
-	GetCompositeClientRolesByUserID(ctx context.Context, token, realm, idOfClient, userID string) ([]*Role, error)
-	// GetCompositeClientRolesByGroupID returns all client roles and composite roles assigned to the given group
-	GetCompositeClientRolesByGroupID(ctx context.Context, token, realm, idOfClient, groupID string) ([]*Role, error)
-	// GetAvailableClientRolesByUserID returns all available client roles to the given user
-	GetAvailableClientRolesByUserID(ctx context.Context, token, realm, idOfClient, userID string) ([]*Role, error)
-	// GetAvailableClientRolesByGroupID returns all available client roles to the given group
-	GetAvailableClientRolesByGroupID(ctx context.Context, token, realm, idOfClient, groupID string) ([]*Role, error)
-
-	// GetClientRole get a role for the given client in a realm by role name
-	GetClientRole(ctx context.Context, token, realm, idOfClient, roleName string) (*Role, error)
-	// AddClientRoleComposite adds roles as composite
-	AddClientRoleComposite(ctx context.Context, token, realm, roleID string, roles []Role) error
-	// DeleteClientRoleComposite deletes composites from a role
-	DeleteClientRoleComposite(ctx context.Context, token, realm, roleID string, roles []Role) error
-
-	// *** Realm ***
-
-	// GetRealm returns top-level representation of the realm
-	GetRealm(ctx context.Context, token, realm string) (*RealmRepresentation, error)
-	// GetRealms returns top-level representation of all realms
-	GetRealms(ctx context.Context, token string) ([]*RealmRepresentation, error)
-	// CreateRealm creates a realm
-	CreateRealm(ctx context.Context, token string, realm RealmRepresentation) (string, error)
-	// UpdateRealm updates a given realm
-	UpdateRealm(ctx context.Context, token string, realm RealmRepresentation) error
-	// DeleteRealm removes a realm
-	DeleteRealm(ctx context.Context, token, realm string) error
-	// ClearRealmCache clears realm cache
-	ClearRealmCache(ctx context.Context, token, realm string) error
-	// ClearUserCache clears realm cache
-	ClearUserCache(ctx context.Context, token, realm string) error
-	// ClearKeysCache clears realm cache
-	ClearKeysCache(ctx context.Context, token, realm string) error
-	//GetAuthenticationFlows get all authentication flows from a realm
-	GetAuthenticationFlows(ctx context.Context, token, realm string) ([]*AuthenticationFlowRepresentation, error)
-	//Create a new Authentication flow in a realm
-	CreateAuthenticationFlow(ctx context.Context, token, realm string, flow AuthenticationFlowRepresentation) error
-	//DeleteAuthenticationFlow deletes a flow in a realm with the given ID
-	DeleteAuthenticationFlow(ctx context.Context, token, realm, flowID string) error
-	//GetAuthenticationExecutions retrieves all executions of a given flow
-	GetAuthenticationExecutions(ctx context.Context, token, realm, flow string) ([]*ModifyAuthenticationExecutionRepresentation, error)
-	//CreateAuthenticationExecution creates a new execution for the given flow name in the given realm
-	CreateAuthenticationExecution(ctx context.Context, token, realm, flow string, execution CreateAuthenticationExecutionRepresentation) error
-	//UpdateAuthenticationExecution updates an authentication execution for the given flow in the given realm
-	UpdateAuthenticationExecution(ctx context.Context, token, realm, flow string, execution ModifyAuthenticationExecutionRepresentation) error
-	// DeleteAuthenticationExecution delete a single execution with the given ID
-	DeleteAuthenticationExecution(ctx context.Context, token, realm, executionID string) error
-
-	//CreateAuthenticationExecutionFlow creates a new flow execution for the given flow name in the given realm
-	CreateAuthenticationExecutionFlow(ctx context.Context, token, realm, flow string, execution CreateAuthenticationExecutionFlowRepresentation) error
-
-	// *** Users ***
-
-	// *** Identity Provider **
-	// CreateIdentityProvider creates an identity provider in a realm
-	CreateIdentityProvider(ctx context.Context, token, realm string, providerRep IdentityProviderRepresentation) (string, error)
-	// GetIdentityProviders gets identity providers in a realm
-	GetIdentityProviders(ctx context.Context, token, realm string) ([]*IdentityProviderRepresentation, error)
-	// GetIdentityProvider gets the identity provider in a realm
-	GetIdentityProvider(ctx context.Context, token, realm, alias string) (*IdentityProviderRepresentation, error)
-	// UpdateIdentityProvider updates the identity provider in a realm
-	UpdateIdentityProvider(ctx context.Context, token, realm, alias string, providerRep IdentityProviderRepresentation) error
-	// DeleteIdentityProvider deletes the identity provider in a realm
-	DeleteIdentityProvider(ctx context.Context, token, realm, alias string) error
-	// ImportIdentityProviderConfig parses and returns the identity provider config at a given URL
-	ImportIdentityProviderConfig(ctx context.Context, token, realm, fromURL, providerID string) (map[string]string, error)
-	// ImportIdentityProviderConfigFromFile parses and returns the identity provider config from a given file
-	ImportIdentityProviderConfigFromFile(ctx context.Context, token, realm, providerID, fileName string, fileBody io.Reader) (map[string]string, error)
-	// ExportIDPPublicBrokerConfig exports the broker config for a given alias
-	ExportIDPPublicBrokerConfig(ctx context.Context, token, realm, alias string) (*string, error)
-	// CreateIdentityProviderMapper creates an instance of an identity provider mapper associated with the given alias
-	CreateIdentityProviderMapper(ctx context.Context, token, realm, alias string, mapper IdentityProviderMapper) (string, error)
-	// GetIdentityProviderMapperByID gets the mapper of an identity provider
-	GetIdentityProviderMapperByID(ctx context.Context, token, realm, alias, mapperID string) (*IdentityProviderMapper, error)
-	// UpdateIdentityProviderMapper updates mapper of an identity provider
-	UpdateIdentityProviderMapper(ctx context.Context, token, realm, alias string, mapper IdentityProviderMapper) error
-	// DeleteIdentityProviderMapper deletes an instance of an identity provider mapper associated with the given alias and mapper ID
-	DeleteIdentityProviderMapper(ctx context.Context, token, realm, alias, mapperID string) error
-	// GetIdentityProviderMappers returns list of mappers associated with an identity provider
-	GetIdentityProviderMappers(ctx context.Context, token, realm, alias string) ([]*IdentityProviderMapper, error)
-
-	// *** Protection API ***
-	// GetResource returns a client's resource with the given id, using access token from client
-	GetResourceClient(ctx context.Context, token, realm, resourceID string) (*ResourceRepresentation, error)
-	// GetResources a returns resources associated with the client, using access token from client
-	GetResourcesClient(ctx context.Context, token, realm string, params GetResourceParams) ([]*ResourceRepresentation, error)
-	// CreateResource creates a resource associated with the client, using access token from client
-	CreateResourceClient(ctx context.Context, token, realm string, resource ResourceRepresentation) (*ResourceRepresentation, error)
-	// UpdateResource updates a resource associated with the client, using access token from client
-	UpdateResourceClient(ctx context.Context, token, realm string, resource ResourceRepresentation) error
-	// DeleteResource deletes a resource associated with the client, using access token from client
-	DeleteResourceClient(ctx context.Context, token, realm, resourceID string) error
-
-	// GetResource returns a client's resource with the given id, using access token from admin
-	GetResource(ctx context.Context, token, realm, idOfClient, resourceID string) (*ResourceRepresentation, error)
-	// GetResources a returns resources associated with the client, using access token from admin
-	GetResources(ctx context.Context, token, realm, idOfClient string, params GetResourceParams) ([]*ResourceRepresentation, error)
-	// CreateResource creates a resource associated with the client, using access token from admin
-	CreateResource(ctx context.Context, token, realm, idOfClient string, resource ResourceRepresentation) (*ResourceRepresentation, error)
-	// UpdateResource updates a resource associated with the client, using access token from admin
-	UpdateResource(ctx context.Context, token, realm, idOfClient string, resource ResourceRepresentation) error
-	// DeleteResource deletes a resource associated with the client, using access token from admin
-	DeleteResource(ctx context.Context, token, realm, idOfClient, resourceID string) error
-
-	// GetScope returns a client's scope with the given id, using access token from admin
-	GetScope(ctx context.Context, token, realm, idOfClient, scopeID string) (*ScopeRepresentation, error)
-	// GetScopes returns scopes associated with the client, using access token from admin
-	GetScopes(ctx context.Context, token, realm, idOfClient string, params GetScopeParams) ([]*ScopeRepresentation, error)
-	// CreateScope creates a scope associated with the client, using access token from admin
-	CreateScope(ctx context.Context, token, realm, idOfClient string, scope ScopeRepresentation) (*ScopeRepresentation, error)
-	// UpdateScope updates a scope associated with the client, using access token from admin
-	UpdateScope(ctx context.Context, token, realm, idOfClient string, resource ScopeRepresentation) error
-	// DeleteScope deletes a scope associated with the client, using access token from admin
-	DeleteScope(ctx context.Context, token, realm, idOfClient, scopeID string) error
-
-	// CreatePermissionTicket creates a permission ticket for a resource, using access token from client (typically a resource server)
-	CreatePermissionTicket(ctx context.Context, token, realm string, permissions []CreatePermissionTicketParams) (*PermissionTicketResponseRepresentation, error)
-	// GrantUserPermission lets resource owner grant permission for specific resource ID to specific user ID
-	GrantUserPermission(ctx context.Context, token, realm string, permission PermissionGrantParams) (*PermissionGrantResponseRepresentation, error)
-	// GrantPermission lets resource owner update permission for specific resource ID to specific user ID
-	UpdateUserPermission(ctx context.Context, token, realm string, permission PermissionGrantParams) (*PermissionGrantResponseRepresentation, error)
-	// GetUserPermission gets granted permissions according query parameters
-	GetUserPermissions(ctx context.Context, token, realm string, params GetUserPermissionParams) ([]*PermissionGrantResponseRepresentation, error)
-	// DeleteUserPermission lets resource owner delete permission for specific resource ID to specific user ID
-	DeleteUserPermission(ctx context.Context, token, realm, ticketID string) error
-
-	// GetPermission returns a client's permission with the given id
-	GetPermission(ctx context.Context, token, realm, idOfClient, permissionID string) (*PermissionRepresentation, error)
-	// GetPermissions returns permissions associated with the client
-	GetPermissions(ctx context.Context, token, realm, idOfClient string, params GetPermissionParams) ([]*PermissionRepresentation, error)
-	// CreatePermission creates a permission associated with the client
-	CreatePermission(ctx context.Context, token, realm, idOfClient string, permission PermissionRepresentation) (*PermissionRepresentation, error)
-	// UpdatePermission updates a permission associated with the client
-	UpdatePermission(ctx context.Context, token, realm, idOfClient string, permission PermissionRepresentation) error
-	// DeletePermission deletes a permission associated with the client
-	DeletePermission(ctx context.Context, token, realm, idOfClient, permissionID string) error
-	// GetDependentPermissions returns client's permissions dependent on the policy with given ID
-	GetDependentPermissions(ctx context.Context, token, realm, idOfClient, policyID string) ([]*PermissionRepresentation, error)
-	GetPermissionResources(ctx context.Context, token, realm, idOfClient, permissionID string) ([]*PermissionResource, error)
-	GetPermissionScopes(ctx context.Context, token, realm, idOfClient, permissionID string) ([]*PermissionScope, error)
-
-	// GetPolicy returns a client's policy with the given id, using access token from admin
-	GetPolicy(ctx context.Context, token, realm, idOfClient, policyID string) (*PolicyRepresentation, error)
-	// GetPolicies returns policies associated with the client, using access token from admin
-	GetPolicies(ctx context.Context, token, realm, idOfClient string, params GetPolicyParams) ([]*PolicyRepresentation, error)
-	// CreatePolicy creates a policy associated with the client, using access token from admin
-	CreatePolicy(ctx context.Context, token, realm, idOfClient string, policy PolicyRepresentation) (*PolicyRepresentation, error)
-	// UpdatePolicy updates a policy associated with the client, using access token from admin
-	UpdatePolicy(ctx context.Context, token, realm, idOfClient string, policy PolicyRepresentation) error
-	// DeletePolicy deletes a policy associated with the client, using access token from admin
-	DeletePolicy(ctx context.Context, token, realm, idOfClient, policyID string) error
-	// GetPolicyAssociatedPolicies returns a client's policy associated policies with the given policy id, using access token from admin
-	GetAuthorizationPolicyAssociatedPolicies(ctx context.Context, token, realm, idOfClient, policyID string) ([]*PolicyRepresentation, error)
-	// GetPolicyResources returns a client's resources of specific policy with the given policy id, using access token from admin
-	GetAuthorizationPolicyResources(ctx context.Context, token, realm, idOfClient, policyID string) ([]*PolicyResourceRepresentation, error)
-	// GetPolicyScopes returns a client's scopes of specific policy with the given policy id, using access token from admin
-	GetAuthorizationPolicyScopes(ctx context.Context, token, realm, idOfClient, policyID string) ([]*PolicyScopeRepresentation, error)
-
-	// GetResourcePolicy updates a permission for a specifc resource, using token obtained by Resource Owner Password Credentials Grant or Token exchange
-	GetResourcePolicy(ctx context.Context, token, realm, permissionID string) (*ResourcePolicyRepresentation, error)
-	// GetResources returns resources associated with the client, using token obtained by Resource Owner Password Credentials Grant or Token exchange
-	GetResourcePolicies(ctx context.Context, token, realm string, params GetResourcePoliciesParams) ([]*ResourcePolicyRepresentation, error)
-	// GetResources returns all resources associated with the client, using token obtained by Resource Owner Password Credentials Grant or Token exchange
-	CreateResourcePolicy(ctx context.Context, token, realm, resourceID string, policy ResourcePolicyRepresentation) (*ResourcePolicyRepresentation, error)
-	// UpdateResourcePolicy updates a permission for a specifc resource, using token obtained by Resource Owner Password Credentials Grant or Token exchange
-	UpdateResourcePolicy(ctx context.Context, token, realm, permissionID string, policy ResourcePolicyRepresentation) error
-	// DeleteResourcePolicy deletes a permission for a specifc resource, using token obtained by Resource Owner Password Credentials Grant or Token exchange
-	DeleteResourcePolicy(ctx context.Context, token, realm, permissionID string) error
-
-	// ---------------
-	// Credentials API
-	// ---------------
-
-	// GetCredentialRegistrators returns credentials registrators
-	GetCredentialRegistrators(ctx context.Context, token, realm string) ([]string, error)
-	// GetConfiguredUserStorageCredentialTypes returns credential types, which are provided by the user storage where user is stored
-	GetConfiguredUserStorageCredentialTypes(ctx context.Context, token, realm, userID string) ([]string, error)
-
-	// GetCredentials returns credentials available for a given user
-	GetCredentials(ctx context.Context, token, realm, UserID string) ([]*CredentialRepresentation, error)
-	// DeleteCredentials deletes the given credential for a given user
-	DeleteCredentials(ctx context.Context, token, realm, UserID, CredentialID string) error
-	// UpdateCredentialUserLabel updates label for the given credential for the given user
-	UpdateCredentialUserLabel(ctx context.Context, token, realm, userID, credentialID, userLabel string) error
-	// DisableAllCredentialsByType disables all credentials for a user of a specific type
-	DisableAllCredentialsByType(ctx context.Context, token, realm, userID string, types []string) error
-	// MoveCredentialBehind move a credential to a position behind another credential
-	MoveCredentialBehind(ctx context.Context, token, realm, userID, credentialID, newPreviousCredentialID string) error
-	// MoveCredentialToFirst move a credential to a first position in the credentials list of the user
-	MoveCredentialToFirst(ctx context.Context, token, realm, userID, credentialID string) error
 
 	// ---------------
 	// Events API

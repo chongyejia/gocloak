@@ -236,3 +236,40 @@ func (u *Users) GetUserOfflineSessionsForClient(ctx context.Context, token, real
 
 	return res, nil
 }
+
+// GetUserFederatedIdentities gets all user federated identities
+func (u *Users) GetUserFederatedIdentities(ctx context.Context, token, realm, userID string) ([]*FederatedIdentityRepresentation, error) {
+	const errMessage = "could not get user federeated identities"
+
+	var res []*FederatedIdentityRepresentation
+	resp, err := u.client.getRequestWithBearerAuth(ctx, token).
+		SetResult(&res).
+		Get(u.client.getAdminRealmURL(realm, "users", userID, "federated-identity"))
+
+	if err := checkForError(resp, err, errMessage); err != nil {
+		return nil, err
+	}
+
+	return res, err
+}
+
+// CreateUserFederatedIdentity creates an user federated identity
+func (u *Users) CreateUserFederatedIdentity(ctx context.Context, token, realm, userID, providerID string, federatedIdentityRep FederatedIdentityRepresentation) error {
+	const errMessage = "could not create user federeated identity"
+
+	resp, err := u.client.getRequestWithBearerAuth(ctx, token).
+		SetBody(federatedIdentityRep).
+		Post(u.client.getAdminRealmURL(realm, "users", userID, "federated-identity", providerID))
+
+	return checkForError(resp, err, errMessage)
+}
+
+// DeleteUserFederatedIdentity deletes an user federated identity
+func (u *Users) DeleteUserFederatedIdentity(ctx context.Context, token, realm, userID, providerID string) error {
+	const errMessage = "could not delete user federeated identity"
+
+	resp, err := u.client.getRequestWithBearerAuth(ctx, token).
+		Delete(u.client.getAdminRealmURL(realm, "users", userID, "federated-identity", providerID))
+
+	return checkForError(resp, err, errMessage)
+}

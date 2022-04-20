@@ -3,7 +3,6 @@ module github.com/chongyejia/gocloak/v11
 go 1.16
 
 require (
-	github.com/Nerzal/gocloak/v11 v11.0.2
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt/v4 v4.3.0
 	github.com/opentracing/opentracing-go v1.2.0
